@@ -94,7 +94,7 @@ const Chat = () => {
     } else {
       try {
         setIsLoading(true);
-        const response = await axios.post("http://localhost:8080/ask", {
+        const response = await axios.post("https://virtual-assit-api.vercel.app/ask", {
           message: message,
         });
         setPrompt("");

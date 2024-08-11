@@ -27,7 +27,7 @@ function Login() {
             return handleError('Email, and Password are required');
         }
         try {
-            const url = `http://localhost:8080/auth/login`;
+            const url = `https://virtual-assit-api.vercel.app/auth/login`;
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
