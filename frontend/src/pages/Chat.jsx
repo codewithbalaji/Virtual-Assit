@@ -6,7 +6,7 @@ import { FaStop } from "react-icons/fa";
 import { AiFillStop } from "react-icons/ai";
 import img2 from "../assets/logo2.jpeg";
 import handleOpenCommands from  "../components/Commands"
-import DropdownMenu from "../components/DropDownMenu";
+import DropdownMenu from "../components/DropdownMenu";
 import { ToastContainer } from "react-toastify";
 
 const Chat = () => {
