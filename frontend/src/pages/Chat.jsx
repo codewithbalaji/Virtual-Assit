@@ -132,7 +132,7 @@ const Chat = () => {
     if ("speechSynthesis" in window) {
       try {
         const utterances = [];
-        const maxChunkLength = 50; // Shorter chunks to reduce the chance of stopping
+        const maxChunkLength = 50; // Adjust as needed
   
         // Split the text into smaller chunks
         for (let i = 0; i < text.length; i += maxChunkLength) {
@@ -153,7 +153,6 @@ const Chat = () => {
           utterances.push(utterance);
         }
   
-        // Read the chunks sequentially with a small delay between them
         let currentUtteranceIndex = 0;
   
         const speakNextChunk = () => {
@@ -167,13 +166,14 @@ const Chat = () => {
   
             currentUtterance.onend = () => {
               currentUtteranceIndex++;
-              setTimeout(speakNextChunk, 100); // Add a short delay before the next chunk
+              setTimeout(speakNextChunk, 100); // Short delay before the next chunk
             };
   
             currentUtterance.onerror = (error) => {
               console.error("Speech synthesis error:", error);
               setSpeaking(false);
               setIsReading(false);
+              window.speechSynthesis.cancel(); // Stop any ongoing synthesis
             };
   
             window.speechSynthesis.speak(currentUtterance);
@@ -183,16 +183,18 @@ const Chat = () => {
           }
         };
   
-        // Start speaking the first chunk
-        speakNextChunk();
+        speakNextChunk(); // Start the speech synthesis
   
       } catch (error) {
         console.error("Speech synthesis failed:", error);
+        setSpeaking(false);
+        setIsReading(false);
       }
     } else {
       console.log("Speech synthesis is not supported in this browser.");
     }
   };
+  
   
   const handleOpenSpeak = () => {
     if (!isRecognitionRunning && recognition) {
@@ -224,13 +226,12 @@ const Chat = () => {
 
   const handleCancel = () => {
     setSpeaking(false);
-    if (speechSynthesisInstance) {
-      speechSynthesisInstance.cancel();
-    }
+    window.speechSynthesis.cancel(); // Directly cancel the speech synthesis
     setIsReading(false);
     setPrompt("");
     setVoicePrompt(""); // Clear the voice prompt when canceled
   };
+  
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-900 text-white">
@@ -311,42 +312,43 @@ const Chat = () => {
               />
             )}
             <div className="flex space-x-2 mt-4 p-4">
-              {" "}
-              {/* Added mt-4 for top space */}
-              {isReading && (
-                <button className="bg-red-600 rounded-full h-16 w-16 flex items-center justify-center">
-                  <AiFillStop
-                    className="text-white cursor-pointer text-4xl"
-                    onClick={handleCancel}
-                  />
-                </button>
-              )}
-              {isSpeaking ? (
-                <button className="bg-yellow-500 rounded-full h-16 w-16 flex items-center justify-center">
-                  <FaStop
-                    className="text-white cursor-pointer text-4xl"
-                    onClick={handleStop}
-                  />
-                </button>
-              ) : (
-                !isChecked && ( // Check if isChecked is false to show CiMicrophoneOn
-                  <button className="bg-green-500 rounded-full h-16 w-16 flex items-center justify-center">
-                    <CiMicrophoneOn
-                      className="text-white text-4xl cursor-pointer"
-                      onClick={handleOpenSpeak}
-                    />
-                  </button>
-                )
-              )}
-              {isChecked && (
-                <button className="bg-blue-600 rounded-full h-16 w-16 flex items-center justify-center">
-                  <IoSend
-                    className="text-white cursor-pointer text-3xl ml-2"
-                    onClick={handleSend}
-                  />
-                </button>
-              )}
-            </div>
+  {isReading && (
+    <button className="bg-red-600 rounded-full h-16 w-16 flex items-center justify-center">
+      <AiFillStop
+        className="text-white cursor-pointer text-4xl"
+        onClick={handleCancel}
+      />
+    </button>
+  )}
+  
+  {isSpeaking && !isReading && (
+    <button className="bg-yellow-500 rounded-full h-16 w-16 flex items-center justify-center">
+      <FaStop
+        className="text-white cursor-pointer text-4xl"
+        onClick={handleStop}
+      />
+    </button>
+  )}
+
+  {!isSpeaking && !isReading && !isChecked && (
+    <button className="bg-green-500 rounded-full h-16 w-16 flex items-center justify-center">
+      <CiMicrophoneOn
+        className="text-white text-4xl cursor-pointer"
+        onClick={handleOpenSpeak}
+      />
+    </button>
+  )}
+
+  {isChecked && (
+    <button className="bg-blue-600 rounded-full h-16 w-16 flex items-center justify-center">
+      <IoSend
+        className="text-white cursor-pointer text-3xl ml-2"
+        onClick={handleSend}
+      />
+    </button>
+  )}
+</div>
+
           </div>
         </div>
       </div>

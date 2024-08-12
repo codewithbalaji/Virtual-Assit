@@ -10,10 +10,10 @@ const DropdownMenu = () => {
 
   const navigate = useNavigate();
 
-  const handleLogout = (e) => {
+  const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("loggedInUser");
-    handleSuccess("User Loggedout");
+    handleSuccess("User Logged out");
     setTimeout(() => {
       navigate("/login");
     }, 1000);

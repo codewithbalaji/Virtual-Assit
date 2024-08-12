@@ -3,7 +3,7 @@ const Pricing = () => {
       <section className="bg-gray-900 text-white pt-4" id="pricing">
         <div className="flex flex-col justify-center items-center">
         <h2 className="text-4xl">Our Pricing</h2>
-        <p className="text-5xl pt-2"><span className="bg-gradient-to-r from-green-300 via-blue-500 to-purple-600 bg-clip-text text-5xl font-extrabold text-transparent ">Simple</span> Pricing, <span className="bg-gradient-to-r from-green-300 via-blue-500 to-purple-600 bg-clip-text text-5xl font-extrabold text-transparent ">Unbeatable</span> Value</p>
+        <p className="text-2xl md:text-5xl pt-2"><span className="bg-gradient-to-r from-green-300 via-blue-500 to-purple-600 bg-clip-text text-2xl md:text-5xl font-extrabold text-transparent ">Simple</span> Pricing, <span className="bg-gradient-to-r from-green-300 via-blue-500 to-purple-600 bg-clip-text text-2xl md:text-5xl font-extrabold text-transparent ">Unbeatable</span> Value</p>
         </div>
       
         <div className="px-4 py-8 sm:px-6 sm:py-12 lg:px-60 lg:py-16">
