@@ -5,7 +5,7 @@ import { IoSend } from "react-icons/io5";
 import { FaStop } from "react-icons/fa";
 import { AiFillStop } from "react-icons/ai";
 import img2 from "../assets/logo2.jpeg";
-import handleOpenCommands from  "../components/Commands"
+import handleOpenCommands from "../components/Commands";
 import DropdownMenu from "../components/DropdownMenu";
 import { ToastContainer } from "react-toastify";
 
@@ -17,14 +17,8 @@ const Chat = () => {
   const [recognition, setRecognition] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isRecognitionRunning, setIsRecognitionRunning] = useState(false);
-  const [speechSynthesisInstance, setSpeechSynthesisInstance] = useState(null);
   const [initialMessageRead, setInitialMessageRead] = useState(false);
   const [isReading, setIsReading] = useState(false);
-
-  
-
-
-
 
   useEffect(() => {
     if (!recognition && window.webkitSpeechRecognition) {
@@ -91,25 +85,26 @@ const Chat = () => {
 
     if (message.includes("open")) {
       handleOpenCommands(message, readResponse, openApp);
-    } else {
+    }
+    else {
       try {
         setIsLoading(true);
-        const response = await axios.post("https://virtual-assit-api.vercel.app/ask", {
-          message: message,
-        });
+        const response = await axios.post(
+          "https://virtual-assit-api.vercel.app/ask",
+          {
+            message: message,
+          }
+        );
         setPrompt("");
         setIsLoading(false);
-        console.log(response.data.message)
+        console.log(response.data.message);
         readResponse(response.data.message);
-        
       } catch (error) {
         console.error("Error sending message to server:", error);
         setIsLoading(false);
       }
     }
   };
-
- 
 
   const handleStop = async () => {
     if (!voicePrompt.trim()) {
@@ -133,58 +128,58 @@ const Chat = () => {
       try {
         const utterances = [];
         const maxChunkLength = 50; // Adjust as needed
-  
+
         // Split the text into smaller chunks
         for (let i = 0; i < text.length; i += maxChunkLength) {
           const chunk = text.slice(i, i + maxChunkLength);
           const utterance = new SpeechSynthesisUtterance(chunk);
-  
+
           // Find a female voice
           const voices = window.speechSynthesis.getVoices();
-          const femaleVoice = voices.find(voice =>
-            voice.name.toLowerCase().includes("female") ||
-            voice.name.toLowerCase().includes("woman")
+          const femaleVoice = voices.find(
+            (voice) =>
+              voice.name.toLowerCase().includes("female") ||
+              voice.name.toLowerCase().includes("woman")
           );
-  
+
           if (femaleVoice) {
             utterance.voice = femaleVoice;
           }
-  
+
           utterances.push(utterance);
         }
-  
+
         let currentUtteranceIndex = 0;
-  
+
         const speakNextChunk = () => {
           if (currentUtteranceIndex < utterances.length) {
             const currentUtterance = utterances[currentUtteranceIndex];
-  
+
             currentUtterance.onstart = () => {
               setSpeaking(true);
               setIsReading(true);
             };
-  
+
             currentUtterance.onend = () => {
               currentUtteranceIndex++;
               setTimeout(speakNextChunk, 100); // Short delay before the next chunk
             };
-  
+
             currentUtterance.onerror = (error) => {
               console.error("Speech synthesis error:", error);
               setSpeaking(false);
               setIsReading(false);
               window.speechSynthesis.cancel(); // Stop any ongoing synthesis
             };
-  
+
             window.speechSynthesis.speak(currentUtterance);
           } else {
             setSpeaking(false);
             setIsReading(false);
           }
         };
-  
+
         speakNextChunk(); // Start the speech synthesis
-  
       } catch (error) {
         console.error("Speech synthesis failed:", error);
         setSpeaking(false);
@@ -194,14 +189,13 @@ const Chat = () => {
       console.log("Speech synthesis is not supported in this browser.");
     }
   };
-  
-  
+
   const handleOpenSpeak = () => {
     if (!isRecognitionRunning && recognition) {
       setVoicePrompt(""); // Clear the previous voice prompt before starting a new one
       setSpeaking(true);
       setIsRecognitionRunning(true);
-  
+
       try {
         // Stop any ongoing recognition before starting a new one
         recognition.stop();
@@ -213,7 +207,6 @@ const Chat = () => {
       }
     }
   };
-  
 
   const openApp = (uri) => {
     try {
@@ -231,14 +224,12 @@ const Chat = () => {
     setPrompt("");
     setVoicePrompt(""); // Clear the voice prompt when canceled
   };
-  
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-900 text-white">
       <div className="flex flex-col w-full h-full rounded-lg overflow-hidden">
         <div className="flex flex-col p-2">
           <div className="flex justify-between">
-         
             <label className="relative inline-block h-8 w-14 cursor-pointer rounded-full bg-gray-300 transition">
               <input
                 type="checkbox"
@@ -249,13 +240,13 @@ const Chat = () => {
               />
               <span className="absolute inset-y-0 start-0 m-1 size-6 rounded-full bg-gray-300 ring-[6px] ring-inset ring-white transition-all peer-checked:start-8 peer-checked:w-2 peer-checked:bg-white peer-checked:ring-transparent"></span>
             </label>
-            <DropdownMenu/>
+            <DropdownMenu />
           </div>
         </div>
 
         {isLoading ? (
           <div className="flex flex-col justify-center items-center flex-1">
-           <img
+            <img
               className="w-64 h-64 bg-gray-600 rounded-full"
               src={img2}
               alt=""
@@ -282,7 +273,7 @@ const Chat = () => {
               alt=""
             />
             <div className="text-3xl pt-6 font-mono animate-pulse">
-            {voicePrompt || prompt }
+              {voicePrompt || prompt}
             </div>
           </div>
         ) : (
@@ -312,43 +303,42 @@ const Chat = () => {
               />
             )}
             <div className="flex space-x-2 mt-4 p-4">
-  {isReading && (
-    <button className="bg-red-600 rounded-full h-16 w-16 flex items-center justify-center">
-      <AiFillStop
-        className="text-white cursor-pointer text-4xl"
-        onClick={handleCancel}
-      />
-    </button>
-  )}
-  
-  {isSpeaking && !isReading && (
-    <button className="bg-yellow-500 rounded-full h-16 w-16 flex items-center justify-center">
-      <FaStop
-        className="text-white cursor-pointer text-4xl"
-        onClick={handleStop}
-      />
-    </button>
-  )}
+              {isReading && (
+                <button className="bg-red-600 rounded-full h-16 w-16 flex items-center justify-center">
+                  <AiFillStop
+                    className="text-white cursor-pointer text-4xl"
+                    onClick={handleCancel}
+                  />
+                </button>
+              )}
 
-  {!isSpeaking && !isReading && !isChecked && (
-    <button className="bg-green-500 rounded-full h-16 w-16 flex items-center justify-center">
-      <CiMicrophoneOn
-        className="text-white text-4xl cursor-pointer"
-        onClick={handleOpenSpeak}
-      />
-    </button>
-  )}
+              {isSpeaking && !isReading && (
+                <button className="bg-yellow-500 rounded-full h-16 w-16 flex items-center justify-center">
+                  <FaStop
+                    className="text-white cursor-pointer text-4xl"
+                    onClick={handleStop}
+                  />
+                </button>
+              )}
 
-  {isChecked && (
-    <button className="bg-blue-600 rounded-full h-16 w-16 flex items-center justify-center">
-      <IoSend
-        className="text-white cursor-pointer text-3xl ml-2"
-        onClick={handleSend}
-      />
-    </button>
-  )}
-</div>
+              {!isSpeaking && !isReading && !isChecked && (
+                <button className="bg-green-500 rounded-full h-16 w-16 flex items-center justify-center">
+                  <CiMicrophoneOn
+                    className="text-white text-4xl cursor-pointer"
+                    onClick={handleOpenSpeak}
+                  />
+                </button>
+              )}
 
+              {isChecked && (
+                <button className="bg-blue-600 rounded-full h-16 w-16 flex items-center justify-center">
+                  <IoSend
+                    className="text-white cursor-pointer text-3xl ml-2"
+                    onClick={handleSend}
+                  />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -357,5 +347,4 @@ const Chat = () => {
   );
 };
 
-    
 export default Chat;
