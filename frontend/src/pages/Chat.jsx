@@ -5,9 +5,10 @@ import { IoSend } from "react-icons/io5";
 import { FaStop } from "react-icons/fa";
 import { AiFillStop } from "react-icons/ai";
 import img2 from "../assets/logo2.jpeg";
-import handleOpenCommands from "../components/Commands";
 import DropdownMenu from "../components/DropdownMenu";
 import { ToastContainer } from "react-toastify";
+import handleOpenCommands from "../components/Commands";
+
 
 const Chat = () => {
   const [isSpeaking, setSpeaking] = useState(false);
@@ -29,8 +30,7 @@ const Chat = () => {
         newRecognition.lang = "en-US";
 
         newRecognition.onresult = (event) => {
-          const transcript =
-            event.results[event.results.length - 1][0].transcript;
+          const transcript = event.results[event.results.length - 1][0].transcript;
           setVoicePrompt(transcript);
         };
 
@@ -62,7 +62,7 @@ const Chat = () => {
       } else {
         greeting = "Good Evening";
       }
-      const initialMessage = `Hello ${greeting} How can I help you`;
+      const initialMessage = `Hello ${greeting}, How can I help you today?`;
       readResponse(initialMessage);
       setInitialMessageRead(true);
     }
@@ -83,21 +83,18 @@ const Chat = () => {
   const processCommand = async (message) => {
     message = message.toLowerCase();
 
+    // Example of handling an "open" command
     if (message.includes("open")) {
       handleOpenCommands(message, readResponse, openApp);
-    }
-    else {
+    } else {
       try {
         setIsLoading(true);
         const response = await axios.post(
           "https://virtual-assit-api.vercel.app/ask",
-          {
-            message: message,
-          }
+          { message }
         );
         setPrompt("");
         setIsLoading(false);
-        console.log(response.data.message);
         readResponse(response.data.message);
       } catch (error) {
         console.error("Error sending message to server:", error);
@@ -224,6 +221,8 @@ const Chat = () => {
     setPrompt("");
     setVoicePrompt(""); // Clear the voice prompt when canceled
   };
+
+  
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-900 text-white">
